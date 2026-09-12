@@ -1,0 +1,19 @@
+name: CD
+
+# Continuous Delivery: garante que a aplicação está sempre pronta para
+# ser implantada, construindo a imagem Docker a cada push/PR (sem publicá-la).
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Build da imagem Docker
+        run: docker build -t cpf-cnpj-validator:ci .

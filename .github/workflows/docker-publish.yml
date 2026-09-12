@@ -1,0 +1,31 @@
+name: Publicar no Docker Hub
+
+# Desafio opcional da Unidade 04: continuous deployment de verdade —
+# builda e publica a imagem no Docker Hub sempre que o main é atualizado.
+# Só roda depois do merge (não bloqueia a PR) e só funciona se os secrets
+# DOCKERHUB_USERNAME e DOCKERHUB_TOKEN estiverem configurados no repositório.
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build e push da imagem
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/cpf-cnpj-validator:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/cpf-cnpj-validator:${{ github.sha }}
