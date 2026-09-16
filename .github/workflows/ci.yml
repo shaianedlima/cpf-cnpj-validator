@@ -23,3 +23,19 @@ jobs:
 
       - name: Rodar testes automatizados
         run: pytest -v
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+      - name: Notificar no Discord
+        run: |
+          if [ "${{ needs.test.result }}" == "success" ]; then
+            MSG="✅ CI passou em **cpf-cnpj-validator** (commit \`${{ github.sha }}\`, por ${{ github.actor }})"
+          else
+            MSG="❌ CI falhou em **cpf-cnpj-validator** (commit \`${{ github.sha }}\`, por ${{ github.actor }})"
+          fi
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"$MSG\"}" \
+               "${{ secrets.DISCORD_WEBHOOK }}"
